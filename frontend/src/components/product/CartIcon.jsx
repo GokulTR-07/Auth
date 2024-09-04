@@ -10,7 +10,7 @@ const CartIcon = ({ onClick }) => {
 
   return (
     <button
-      className="fixed top-20 right-4 bg-white border border-gray-300 rounded-full p-2 shadow-lg z-50"
+      className="fixed top-10 right-4 bg-white border border-gray-300 rounded-full p-2 shadow-lg z-50"
       onClick={onClick}
     >
       <div className="relative">

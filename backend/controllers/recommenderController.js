@@ -9,16 +9,28 @@ const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 export const analyzeData = async (req, res) => {
   try {
-    const { recommendation, culinary, medicinal, cosmetic, pregnantWomen } =
-      req.body;
+    const { recommendation, culinary, medicinal, cosmetic, pregnantWomen } = req.body;
     const { useCases } = recommendation;
 
     if (!useCases || !Array.isArray(useCases)) {
       return res.status(400).json({ error: "Invalid or missing useCases" });
     }
 
+    // Extract user data from the request
+    const user = req.body;
+    console.log(user);
+    if (!user || !user.id || !user.name || !user.email) {
+      return res.status(400).json({ error: "User information is missing" });
+    }
+
     // Process data to match schema expectations
     const userData = new UserData({
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role || "user", // Default to "user" if role is not provided
+      },
       recommendation: {
         useCases: Array.isArray(req.body.recommendation?.useCases)
           ? req.body.recommendation.useCases
@@ -128,8 +140,8 @@ export const analyzeData = async (req, res) => {
     // Construct the prompt for the AI model
     const prompt = `Based on the following use cases: ${useCases.join(", ")} and details: ${collectedData.join(  " | ")}, recommend either Kashmiri or Spanish saffron. Choose only one option and provide a brief explanation with 3 to 4 positive points about why it is the best choice for the given use cases. Avoid providing details for the non-recommended option.
     {
-      "title": "<Recommended Saffron Type>",
-      "suggestion": "<Explanation>"
+      "title": "Recommended Saffron Type",
+      "suggestion": "Explanation"
     }`;
 
     // Call the Hugging Face model

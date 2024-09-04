@@ -21,12 +21,13 @@ const userSchema = new Schema({
   uniqueId: { type: String, unique: true },
   role: {
     type: String,
-    enum: ['user', 'admin'],
+    enum: ['user', 'admin', 'telecaller'],
     default: "user",
     immutable: true,
   },
   createdAt: {
-    type: Date,
+    type: Date, 
+    // luxury@zprincesssaffron.com
     default: Date.now,
   },
 });

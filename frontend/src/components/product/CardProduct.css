@@ -1,0 +1,244 @@
+.cp_main{
+  width: 100vw;
+}
+
+.cp_div1{
+  background-color: #AEAFDB;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cp_div1>div>h1{
+  letter-spacing: 0.5rem;
+  font-size: 3.5rem;
+}
+
+.cp_div2{
+  background-color: #b2bd99ca;
+  width: 100%;
+  padding: 5vh 0;
+}
+
+.cp_div21>h1{
+  font-size: 2rem;
+  letter-spacing: 0.3rem;
+  margin-left: 3vw;
+}
+.cp_div22{
+  width: 100%;
+  display: flex;
+  gap: 10vw;
+  padding: 5vh 0;
+  transition: all 0.3s ease-in-out;
+}
+.cp_div22_1,.cp_div22_2{
+  height: 300px;
+  width: 300px;
+  border-radius: 20px;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  opacity: 80%;
+
+}
+.cp_div22_1{
+background-color: #FCF1F5;   
+}
+
+.cp_div22_2{
+  background-color: #eeeeff;
+}
+
+.cp_div3{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 100px;
+}
+.cp_div31{
+  width: 60%;
+  display: flex;
+  justify-content: end;
+
+}
+.cp_div32{
+  width: 40%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 3vw;
+}
+.cp_div31_1{
+  background-color: aliceblue;
+  height: 4px;
+  border-radius: 2px;
+  width: 60%;
+}
+.cp_div31_1>div{
+  width: 50%;
+  background-color: black;
+  height: 4px;
+  border-radius: 2px;
+}
+.cp_div32>button{
+  height: 40px;
+  border: none;
+  width: 40px;
+  background-color: white;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cp_div22_11{
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  top: 0;
+  left: 0;
+}
+.cp_div22_11_2{
+  width: 80%;
+  padding: 10px 30px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.cp_div22_11_2>button{
+  background-color: white;
+  padding: 5px 15px;
+  border-radius: 15px;
+  border: none;
+  letter-spacing: 1.5px;
+  font-size: small;
+  transition: scale 0.2s ease-in-out;
+  cursor: pointer;
+
+}
+.cp_div22_11_1{
+  width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: left;
+}
+.cp_div22_11_1>h1{
+  font-size: 1rem;
+  margin-top: 10px;
+  background-color: white;
+  padding: 5px 20px;
+  margin-left: 10px;
+  border-radius: 15px;
+  letter-spacing: 1.5px;
+
+
+}
+.cp_div22_2.spain{
+  scale: 110%;
+  opacity: 100%;
+
+}
+.cp_div22_1.kashmir{
+  scale: 110%;
+  opacity: 100%;
+
+
+}
+.cp_div31_11{
+  transition: all 0.3s ease-in-out;
+}
+.cp_div31_11.spain{
+  transform: translateX(100%);
+}
+.cp_div31_11.kashmir{
+  transform: translateX(0);
+}
+.cp_div22_3{
+  width: 30%;
+  padding-left: 3vw;
+}
+.cp_div22_3>h1{
+  letter-spacing: 0.3rem;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.cp_div22_3>p{
+  color: black;
+  text-transform: capitalize;
+  letter-spacing: 1.5px;
+  word-spacing: 2px;
+}
+.cp_div22_31{
+  padding: 5vh 0;
+  
+}
+.cp_div22_31>button{
+  margin-right: 20px;
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 25px;
+  background-color: rgba(0, 0, 0, 0.774);
+  color: white;
+  letter-spacing: 1px;
+}
+.cp_cart_hover{
+  background-color: rgb(202, 211, 175);
+  padding: 5px 25px ;
+  border-radius: 15px;
+
+  display: flex;
+  flex-direction: row;
+  gap:10px;
+  align-items: center;
+  justify-content: space-between;
+}
+.cp_cart_hover>div>button{
+  background-color: black;
+  height: 20px;
+  width: 20px;
+  border-radius: 2px;
+  color: white;
+  border: none;
+  cursor: pointer;
+
+}
+.cp_cart_hover>div>button:active{
+
+  scale: 95%;
+}
+.cp_cart_hover>div{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.cp_cart_hover>div>p{
+  margin:0 5px ;
+  color: black;
+  font-size: 1.2rem;
+}
+.cp_cart_hover>button{
+  background-color: rgb(12, 86, 12);
+  color: white;
+  border: none;
+  height: 25px;
+  width: 25px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: scale 0.2s ease-in-out;
+  cursor: pointer;
+}
+.cp_div22_11_2>button:active{
+  scale: 98%;
+
+}
+.cp_cart_hover>button:active{
+  scale: 95%;
+}

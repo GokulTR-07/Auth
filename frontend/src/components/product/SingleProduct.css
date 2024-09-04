@@ -1,0 +1,150 @@
+/* .sp_main{
+    width: 100vw;
+    height: 100vh;
+}
+.sp_main.true{
+    background-image: radial-gradient(#96c1b8 30%,#719c91);
+
+}
+.sp_main.false{
+    background-image: radial-gradient(#746d9f 30%,#110845c5);
+
+}
+.sp_div1{
+    height: 20vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+
+}
+.sp_div2{
+    height: 60vh;
+    padding-left: 3vw;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    
+}
+.sp_div2_1>h1{
+    font-size: 3rem;
+    color: rgb(255, 255, 255);
+    letter-spacing: 0.3rem;
+    
+}
+.sp_div3{
+    height: 20vh;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    padding-right: 20vh;
+    padding-left: 20vh;
+
+    
+}
+.sp_div1>button{
+    padding: 10px 25px;
+    border-radius: 25px;
+    border: none;
+}
+.st.true{
+    background-color: white;
+    color: black;
+
+}
+.nd.true{
+    background-color: rgba(0, 0, 0, 0.405);
+    color: white;
+    scale: 90%;
+
+}
+.st.false{
+    background-color: rgba(0, 0, 0, 0.405);
+    color: white;
+    scale: 90%;
+}
+.nd.false{
+    background-color: white;
+    color: black;
+
+
+
+    
+}
+.sp_div3>button{
+    padding: 15px 30px;
+    letter-spacing: 1.5px;
+    border-radius: 25px;
+    border: none;
+    background-color: white;
+    box-shadow: 2px 2px 5px 2px  rgba(0, 0, 0, 0.177);
+
+}
+.sp_div3>h1{
+    font-size: 3rem;
+    color: white;
+    text-shadow: 2px 2px 2px rgba(0,0,0,0.4);
+
+}
+.sp_selectgram{
+}
+.sp_selectgram>button{
+    background-color: white;
+    height: 60px;
+    width: 60px;
+    margin-right: 20px;
+    border: none;
+    border-radius: 60px;
+    box-shadow: 2px 2px 5px 2px  rgba(0,0,0,0.4);
+}
+.sp_selectgram>button:active{
+    scale: 95%;
+
+}
+.sp_div2_1>p{
+    color: white;
+    font-weight: 100;
+    letter-spacing: 1.5px;
+}
+.sp_star{
+    margin-top: 10px;
+}
+.sp_selectgram{
+    margin-top: 10px;
+    padding: 10px;
+}
+.sp_div2_2{
+    height: 100%;
+    width: 20vw;
+
+}
+
+.sp_div2_21{
+    gap: 20px;
+}
+.sp_div2_21>button{
+    height: 40px;
+    width: 40px;
+    border-radius: 5px;
+    border: 1px solid #0937096f;
+    margin: 0 10px 0 10px;
+    background-color: #ffffffb6;
+
+}
+.sp_div2_21>button:active{
+    scale: 95%;
+
+}
+.sp_div2_22{
+    background-color: rgba(227, 221, 221, 0.486);
+    height: 150px;
+    width: 40px;
+    display: flex;
+    float: right;
+    margin-top: 10vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgb(0, 0, 0);
+} */

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ import { FaRobot } from "react-icons/fa6";
 import BotProductList from "./BotProductList";
 import SalesExecutive from "../../assets/gif/Animation - 1723113918679.gif";
 import Client from "../../assets/gif/Animation - 1723117354452.gif"
+import { userContext } from "../../context/UserContext";
 
 const useCaseQuestions = {
   recommendation: {
@@ -182,6 +183,9 @@ const Chatbot = () => {
   const [suggestion, setSuggestion] = useState();
   const navigate = useNavigate();
 
+  const {user} = useContext(userContext);
+  console.log(user);
+
   let recognition;
 
   // Initialize speech recognition
@@ -349,7 +353,8 @@ const Chatbot = () => {
 
         // Send data to backend
         try {
-          const response = await axios.post("/analyzeData", data);
+          const response = await axios.post("/analyzeData", data, {user});
+          
           const suggestionText = response.data.suggestion;
           setSuggestion(suggestionText);
 

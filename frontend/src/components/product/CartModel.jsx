@@ -20,6 +20,15 @@ const CartModel = ({ isOpen, onClose }) => {
     navigate('/checkout');
   };
 
+  const handleRemoveItem = (item) => {
+    removeItem(item._id, item.weight); // Pass both id and weight
+  };
+
+  const handleQuantityChange = (item, delta) => {
+    // Update quantity with delta (-1 or 1)
+    updateQuantity(item.id, item.weight, delta);
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 overflow-auto">
       <motion.div
@@ -47,10 +56,13 @@ const CartModel = ({ isOpen, onClose }) => {
         <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Cart</h2>
         <div className="max-h-[60vh] overflow-y-auto">
           {cartItems.length === 0 ? (
-            <p className="text-gray-700 dark:text-gray-300">Your cart is empty.</p>
+            <p className="text-gray-700 dark:text-gray-300">
+              {window.location.reload()}
+              Your cart is empty.
+            </p>
           ) : (
             cartItems.map((item) => (
-              <div key={item.id} className="flex items-center border-b border-gray-200 dark:border-gray-700 py-4">
+              <div key={`${item.id}-${item.weight}`} className="flex items-center border-b border-gray-200 dark:border-gray-700 py-4">
                 <img
                   src={item.img}
                   alt={item.name}
@@ -58,18 +70,19 @@ const CartModel = ({ isOpen, onClose }) => {
                 />
                 <div className="ml-4 flex-1">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{item.name}</h3>
+                  <p className="text-gray-600 dark:text-gray-400">Weight: {item.weight}g</p>
                   <p className="text-gray-600 dark:text-gray-400">₹{item.price}</p>
                   <div className="flex items-center mt-2">
                     <button
                       className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 p-2 rounded"
-                      onClick={() => updateQuantity(item, -1)}
+                      onClick={() => handleQuantityChange(item, -1)}
                     >
                       -
                     </button>
                     <span className="mx-2">{item.quantity}</span>
                     <button
                       className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 p-2 rounded"
-                      onClick={() => updateQuantity(item, 1)}
+                      onClick={() => handleQuantityChange(item, 1)}
                     >
                       +
                     </button>
@@ -77,7 +90,7 @@ const CartModel = ({ isOpen, onClose }) => {
                 </div>
                 <button
                   className="mr-4 text-red-500 border border-red-500 hover:text-red-600 rounded-full p-0.5"
-                  onClick={() => removeItem(item.id)}
+                  onClick={() => handleRemoveItem(item)}
                 >
                   <svg
                     className="w-4 h-4"

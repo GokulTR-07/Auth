@@ -1,5 +1,6 @@
 import User from "../models/user.js";
 import Order from "../models/order.js";
+import mongoose from "mongoose";
 
 
 // getting all the User's data

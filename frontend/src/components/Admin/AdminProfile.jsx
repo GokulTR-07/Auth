@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import { FaUserCircle } from 'react-icons/fa';
-// import { useUser } from '../contexts/UserContext'; // Adjust the path based on your project structure
 import { userContext } from '../../context/UserContext';
 
 const AdminProfile = () => {
-  const { user } = useContext(userContext); // Access user and setUser from context
+  const { user, setUser } = useContext(userContext); // Access user and setUser from context
   const [editMode, setEditMode] = useState(false);
   const [profileData, setProfileData] = useState(user); // Initialize with user data
+
+  useEffect(() => {
+    setProfileData(user); // Sync local state with context if it changes
+  }, [user]);
 
   const handleEditToggle = () => {
     setEditMode(!editMode);
@@ -19,14 +23,20 @@ const AdminProfile = () => {
     });
   };
 
-  const handleSave = () => {
-    // Simulate saving data to backend or update the context
-    setEditMode(false); // Exit edit mode
+  const handleSave = async () => {
+    try {
+      const response = await axios.put("/profile", profileData, {
+        withCredentials: true, // Include cookies for authentication
+      });
+      if (response.status === 200) {
+        setUser(response.data); // Update context with new user data
+        setEditMode(false); // Exit edit mode
+      }
+    } catch (error) {
+      console.error("Error saving profile data:", error);
+      // Optionally show an error message
+    }
   };
-
-  useEffect(() => {
-    setProfileData(user); // Sync local state with context if it changes
-  }, [user]);
 
   return (
     <div className="p-8 bg-gray-50 shadow-lg rounded-lg max-w-md mx-auto">
@@ -53,6 +63,7 @@ const AdminProfile = () => {
           <div className="mb-4">
             <label className="block text-gray-700 font-medium">Email:</label>
             <input
+              disabled
               type="email"
               name="email"
               value={profileData.email}
@@ -71,10 +82,16 @@ const AdminProfile = () => {
             />
           </div>
           <div className="flex justify-end space-x-3">
-            <button onClick={handleSave} className="px-5 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-200">
+            <button
+              onClick={handleSave}
+              className="px-5 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-200"
+            >
               Save
             </button>
-            <button onClick={handleEditToggle} className="px-5 py-2 bg-gray-300 text-gray-700 rounded-lg shadow-md hover:bg-gray-400 transition duration-200">
+            <button
+              onClick={handleEditToggle}
+              className="px-5 py-2 bg-gray-300 text-gray-700 rounded-lg shadow-md hover:bg-gray-400 transition duration-200"
+            >
               Cancel
             </button>
           </div>

@@ -39,6 +39,10 @@ import DefaultDashboard from "./components/Admin/DefaultDashboard";
 import WholesalerOrders from "./components/Admin/WholesalerOrders";
 import AdminProfile from "./components/Admin/AdminProfile";
 import AdminSetting from "./components/Admin/AdminSetting";
+import TeleCallerDashboard from "./components/Telecaller/TeleCallerDashboard";
+import SingleProduct from "./components/product/SingleProduct";
+import CardProduct from "./components/product/CardProduct";
+import ProductPage from "./components/product/ProductPage";
 // import Login from "./components/login/Login"
 
 function App() {
@@ -46,9 +50,12 @@ function App() {
     <UserContextProvider>
       <CartProvider>
         <Toaster position="bottom-center" toastOptions={{ duration: 2000 }} />
-        {/* <Navbar /> */}
+        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/singleproduct" element={<SingleProduct />} />
+          <Route path="/card-product" element={<CardProduct />} />
+          <Route path="/productpage" element={<ProductPage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/403" element={<ForbiddenPage />} />
@@ -189,6 +196,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path='/telecaller-dashboard' element={<ProtectedRoute allowedRoles={["telecaller"]}><TeleCallerDashboard/></ProtectedRoute>}/>
         </Routes>
       </CartProvider>
     </UserContextProvider>

@@ -10,7 +10,6 @@ const DEFAULT_PACK_SIZE = {
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-
   const [cartItems, setCartItems] = useState(() => {
     // Load initial state from localStorage
     const savedItems = localStorage.getItem("cartItems");
@@ -24,31 +23,39 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
   }, [cartItems]);
 
-  const addToCart = (product) => {
-    setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item.id === product.id);
-      if (existingItem) {
-        return prevItems.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + product.quantity }
-            : item
-        );
-      } else {
-        return [...prevItems, { ...product, quantity: product.quantity }];
-      }
-    });
-  };
+  // Example of addToCart function
+const addToCart = (product) => {
+  setCartItems((prevItems) => {
+    const existingItemIndex = prevItems.findIndex(
+      (item) => item._id === product._id && item.weight === product.weight
+    );
 
-  const updateQuantity = (item, amount) => {
+    if (existingItemIndex >= 0) {
+      // Update quantity if the item already exists
+      const updatedItems = [...prevItems];
+      updatedItems[existingItemIndex].quantity += product.quantity;
+      return updatedItems;
+    } else {
+      // Add new item to cart
+      return [...prevItems, product];
+    }
+  });
+};
+
+
+  
+
+  const updateQuantity = (productId, weight, amount) => {
     setCartItems((prevItems) =>
       prevItems.map((cartItem) =>
-        cartItem.id === item.id
+        cartItem.id === productId && cartItem.weight === weight
           ? {
               ...cartItem,
               quantity: Math.max(
                 cartItem.quantity + amount,
-                // Check if user is a wholesaler and apply the default pack size if needed
-                (user && user.role === 'wholesaler') ? DEFAULT_PACK_SIZE[cartItem.weight] : 1
+                (user && user.role === "wholesaler")
+                  ? DEFAULT_PACK_SIZE[weight] || 1
+                  : 1
               ),
             }
           : cartItem
@@ -56,8 +63,10 @@ export const CartProvider = ({ children }) => {
     );
   };
 
-  const removeItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+  const removeItem = (_id, weight) => {
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => !(item._id === _id && item.weight === weight))
+    );
   };
 
   return (

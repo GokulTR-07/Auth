@@ -1,97 +1,97 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Slider from "react-slick";
-import { products } from "../../data/Productdata.js";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import { FaShoppingCart } from 'react-icons/fa'; // Import Cart icon
-import CartModal from "./CartModel";
+import { FaChevronRight } from 'react-icons/fa';
 import { motion } from "framer-motion";
 import { CartContext } from "../../context/CartContext";
-import CartIcon from "./CartIcon.jsx";
-import { userContext } from "../../context/UserContext.jsx";
+import CartIcon from "./CartIcon";
+import CartModal from "./CartModel";
+import { userContext } from "../../context/UserContext";
+import axios from 'axios';
+import saffron1 from "../../assets/Images/saffron-1.jpg";
+import saffron2 from "../../assets/Images/saffron-2.jpg";
 
 const ProductCard = () => {
   const { user } = useContext(userContext);
   const { cartItems, addToCart } = useContext(CartContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [products, setProducts] = useState([]);
   const [quantities, setQuantities] = useState({});
+  const [selectedWeight, setSelectedWeight] = useState({});
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('/products'); // Adjust the endpoint based on your backend setup
+        const productData = response.data.map((product, index) => ({
+          ...product,
+          img: index % 2 === 0 ? saffron1 : saffron2, // Assign images alternately or based on some logic
+        }));
+        setProducts(productData);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
 
-  const viewProductDetail = (id) => {
-    navigate(`/product/${id}`);
-  };
-
-  const getDefaultQuantity = (product) => {
+  const getDefaultQuantity = (productId, weight) => {
     if (user?.role === "wholesaler") {
-      if (product.weight === 2) return 5;
-      if (product.weight === 5) return 2;
+      return weight === 2 ? 5 : 2;
     }
     return 1; // Default quantity for regular users
   };
 
-  const handleIncrement = (product, e) => {
+  const handleAddToCart = (productId, e) => {
     e.stopPropagation(); // Prevent click event from bubbling up
-    setQuantities((prev) => ({
-      ...prev,
-      [product.id]: (prev[product.id] || getDefaultQuantity(product)) + 1,
-    }));
-  };
-
-  const handleDecrement = (product, e) => {
-    e.stopPropagation(); // Prevent click event from bubbling up
-    setQuantities((prev) => {
-      const defaultQty = getDefaultQuantity(product);
-      return {
-        ...prev,
-        [product.id]: Math.max((prev[product.id] || defaultQty) - 1, defaultQty),
-      };
+    const weight = selectedWeight[productId] || 2; // Default to 2g if not selected
+    const product = products.find((p) => p._id === productId);
+    const variant = product.variants.find((v) => v.weight === weight);
+    addToCart({
+      ...product,
+      quantity: quantities[`${productId}-${weight}`] || getDefaultQuantity(productId, weight),
+      weight,
+      ...variant,
     });
   };
 
-  const handleAddToCart = (product, e) => {
+  const handleBuyNow = (productId, e) => {
     e.stopPropagation(); // Prevent click event from bubbling up
-    const defaultQty = getDefaultQuantity(product);
-    addToCart({ ...product, quantity: quantities[product.id] || defaultQty });
+    handleAddToCart(productId, e); // Add to cart first
+    navigate('/checkout'); // Redirect to checkout
   };
 
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    centerMode: true,
-    centerPadding: "0",
-    focusOnSelect: true,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    arrows: false,
-    customPaging: (i) => (
-      <div className="w-20 h-1 mx-1 relative my-5">
-        <div className="progress-bar"></div>
-      </div>
-    ),
-    dotsClass: "slick-dots custom-dots",
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
+  const handleWeightChange = (productId, weight) => {
+    setSelectedWeight((prev) => ({
+      ...prev,
+      [productId]: weight,
+    }));
+    // Reset quantity when weight changes
+    setQuantities((prev) => ({
+      ...prev,
+      [`${productId}-${weight}`]: getDefaultQuantity(productId, weight),
+    }));
+  };
+
+  const handleIncrement = (productId) => {
+    setQuantities((prev) => ({
+      ...prev,
+      [`${productId}-${selectedWeight[productId] || 2}`]: (prev[`${productId}-${selectedWeight[productId] || 2}`] || 0) + 1,
+    }));
+  };
+
+  const handleDecrement = (productId) => {
+    setQuantities((prev) => {
+      const currentQuantity = prev[`${productId}-${selectedWeight[productId] || 2}`] || 0;
+      return {
+        ...prev,
+        [`${productId}-${selectedWeight[productId] || 2}`]: Math.max(currentQuantity - 1, 1), // Ensure quantity doesn't go below 1
+      };
+    });
   };
 
   return (
@@ -99,103 +99,97 @@ const ProductCard = () => {
       <CartIcon itemCount={cartItems.length} onClick={handleOpenModal} />
       <CartModal isOpen={isModalOpen} onClose={handleCloseModal} />
       <h2 className="text-center text-3xl font-bold mb-10">OUR PRODUCTS</h2>
-      <Slider {...settings} className="product-slider">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
           <motion.div
-            key={product.id}
-            className="py-10 px-4"
+            key={product._id}
+            className="bg-gradient-to-b from-[#96c1b8] to-[#719c91] rounded-lg shadow-lg p-4 flex items-center"
             initial={{ opacity: 0.5, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: "easeInOut" }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <div
-              className="relative mb-4 max-w-sm bg-white border border-gray-300 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 transform transition-transform cursor-pointer"
-              onClick={() => viewProductDetail(product.id)}
-            >
-              <div className="relative group">
-                <a href="#">
-                  <img
-                    className="w-full h-64 object-cover rounded-lg"
-                    src={product.img}
-                    alt="product image"
-                  />
-                </a>
-                <div className="absolute inset-0 bg-gray-900 bg-opacity-75 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center rounded-t-lg">
-                  <div className="p-4">
-                    <h5 className="text-xl font-bold mb-2">{product.name}</h5>
-                    <p className="text-sm">{product.description}</p>
-                    <p className="text-sm mt-2">Origin: {product.origin}</p>
-                  </div>
-                </div>
+            <div className="flex-1 text-center">
+              <h5 className="text-xl font-bold mb-2">{product.name}</h5>
+              <p className="text-sm mb-2">{product.description}</p>
+              <p className="text-sm mb-2">Origin: {product.productFeatures.origin}</p>
+              <div className="flex justify-center mb-4">
+                <button
+                  className={`border p-2 rounded-l-lg ${selectedWeight[product._id] === 2 ? 'bg-gray-300' : 'bg-white'} hover:bg-gray-200`}
+                  onClick={() => handleWeightChange(product._id, 2)}
+                >
+                  2g
+                </button>
+                <button
+                  className={`border p-2 rounded-r-lg ${selectedWeight[product._id] === 5 ? 'bg-gray-300' : 'bg-white'} hover:bg-gray-200`}
+                  onClick={() => handleWeightChange(product._id, 5)}
+                >
+                  5g
+                </button>
               </div>
-              <div className="p-4">
-                <a href="#">
-                  <h5 className="justify-between text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                    {product.name}
-                    <div className="border p-2 rounded-full bg-red-500 mt-2 hover:bg-red-600 transition-colors duration-300">
-                      <FaShoppingCart
-                        className="text-white text-xl cursor-pointer"
-                        onClick={(e) => handleAddToCart(product, e)}
-                      />
-                    </div>
-                  </h5>
-                </a>
-                <div className="flex items-center mt-2 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <svg
-                      key={i}
-                      className={`w-4 h-4 ${
-                        i < Math.floor(product.rating)
-                          ? "text-yellow-300"
-                          : "text-gray-300"
-                      } dark:text-gray-600`}
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="currentColor"
-                      viewBox="0 0 22 20"
-                    >
-                      <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
-                    </svg>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xl font-bold text-gray-900 dark:text-white">
-                    ₹{product.price} / <span className="font-normal text-md">{product.weight}g</span>
-                  </span>
-                  
-                  <div className="flex items-center">
-                    <button
-                      className="text-white bg-gray-300 hover:bg-gray-400 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 mr-2"
-                      onClick={(e) => handleDecrement(product, e)}
-                    >
-                      -
-                    </button>
-                    <span className="text-lg font-medium mx-2">{quantities[product.id] || getDefaultQuantity(product)}</span>
-                    <button
-                      className="text-white bg-gray-300 hover:bg-gray-400 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 mr-2"
-                      onClick={(e) => handleIncrement(product, e)}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
+              <div className="text-lg font-semibold mb-2">
+                ₹{product.variants.find((v) => v.weight === (selectedWeight[product._id] || 2))?.price || 0}
               </div>
+              <div className="text-sm mb-4">
+                {product.variants.find((v) => v.weight === (selectedWeight[product._id] || 2))?.stock > 0
+                  ? `In Stock (${product.variants.find((v) => v.weight === (selectedWeight[product._id] || 2))?.stock} available)`
+                  : "Out of Stock"}
+              </div>
+              <div className="flex justify-center mb-4">
+                <button
+                  className="border p-2 rounded-l-lg bg-gray-200 hover:bg-gray-300"
+                  onClick={() => handleDecrement(product._id)}
+                >
+                  -
+                </button>
+                <input
+                  type="text"
+                  value={quantities[`${product._id}-${selectedWeight[product._id] || 2}`] || getDefaultQuantity(product._id, selectedWeight[product._id] || 2)}
+                  readOnly
+                  className="border-t border-b p-2 text-center w-16"
+                />
+                <button
+                  className="border p-2 rounded-r-lg bg-gray-200 hover:bg-gray-300"
+                  onClick={() => handleIncrement(product._id)}
+                >
+                  +
+                </button>
+              </div>
+              <div className="flex justify-center space-x-4">
+                <button
+                  className={`border p-2 rounded-lg text-white transition-colors duration-300 ${
+                    product.variants.find((v) => v.weight === (selectedWeight[product._id] || 2))?.stock > 0
+                      ? "bg-red-500 hover:bg-red-600"
+                      : "bg-gray-500 cursor-not-allowed"
+                  }`}
+                  onClick={(e) => handleAddToCart(product._id, e)}
+                  disabled={product.variants.find((v) => v.weight === (selectedWeight[product._id] || 2))?.stock <= 0}
+                >
+                  Add to Cart
+                </button>
+                <button
+                  className={`border p-2 rounded-lg text-white transition-colors duration-300 ${
+                    product.variants.find((v) => v.weight === (selectedWeight[product._id] || 2))?.stock > 0
+                      ? "bg-green-500 hover:bg-green-600"
+                      : "bg-gray-500 cursor-not-allowed"
+                  }`}
+                  onClick={(e) => handleBuyNow(product._id, e)}
+                  disabled={product.variants.find((v) => v.weight === (selectedWeight[product._id] || 2))?.stock <= 0}
+                >
+                  Buy Now
+                </button>
+              </div>
+            </div>
+            <div className="w-1/2">
+              <img
+                src={product.img}
+                alt={product.name}
+                className="w-full h-auto rounded-lg"
+              />
             </div>
           </motion.div>
         ))}
-      </Slider>
-      <div className="flex flex-col items-center mt-10">
-        <p className="text-center text-lg font-medium text-gray-700 mb-3">
-          Click this button to know your matching products
-        </p>
-        <button
-          className="bg-red-500 text-white hover:bg-red-600 px-6 py-3 rounded-lg shadow-lg transition duration-300"
-          onClick={() => navigate("/chatbot")}
-        >
-          Ask Now
-        </button>
       </div>
     </div>
   );

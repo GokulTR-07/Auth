@@ -7,7 +7,9 @@ import { getAllMarketers, getMarketer, registerMarketer } from '../controllers/m
 import { getAllWholesalers, getWholeSaler, registerWholesaler } from '../controllers/wholesalerController.js';
 import { createOrder, verifyPayment } from '../controllers/paymentController.js';
 import { OrderData ,userOrders, getOrderData, getUserOrders, updateOrderStatus } from '../controllers/orderController.js';
-import { getAllUserOrders, getAllWholesalerOrders } from '../controllers/adminController.js';
+import { getAllTelecallerOrders, getAllUserOrders, getAllWholesalerOrders, getDefaultDashboardData } from '../controllers/adminController.js';
+import { getProducts, updateProduct } from '../controllers/productController.js';
+import { telecallerOrders } from '../controllers/telecallerController.js';
 
 const router = express.Router();
 
@@ -30,11 +32,17 @@ router.get('/profile', authenticate ,getProfile);
 router.put('/profile', authenticate ,updateProfile)
 
 
+// recommender
 router.get('/getuserdata', getUserData);
 
+router.post("/analyzeData", analyzeData);
 
-// recommender
-router.post('/analyzeData', analyzeData);
+// product
+router.get('/products', getProducts);
+router.put('/products/:id', updateProduct);
+
+// telecaller orders
+router.post('/telecaller-orders', telecallerOrders);
 
 // orders
 router.post('/orders', authenticate, authorize(['user', 'wholesaler']),OrderData);
@@ -58,6 +66,8 @@ router.get('/all/wholesalers', authenticate, authorize(['admin']),getAllWholesal
 router.get('/admin/profile', authenticate, authorize(['admin']),getAdmin);
 router.get('/admin/user-orders', authenticate, authorize(['admin']),getAllUserOrders);
 router.get('/admin/wholesaler-orders', authenticate, authorize(['admin']),getAllWholesalerOrders);
+router.get('/admin/telecaller-orders', authenticate, authorize(['admin']),getAllTelecallerOrders);
+router.get('/admin/default-analytics', authenticate, authorize(['admin']), getDefaultDashboardData );
 
 // payment 
 router.post("/create-order", createOrder);
