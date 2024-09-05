@@ -85,6 +85,10 @@ const CheckoutPage = () => {
     updateQuantity(id, weight, -1);
   };
 
+  const handleRemoveItem = (item) => {
+    removeItem(item._id, item.weight); // Pass both id and weight
+  };
+
   // Calculate Subtotal
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
@@ -101,7 +105,7 @@ const CheckoutPage = () => {
 
       <h1 className="header">Checkout</h1>
 
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex-container">
         {/* Shipping Details */}
         <motion.form
           onSubmit={handleSubmit}
@@ -111,7 +115,7 @@ const CheckoutPage = () => {
           transition={{ duration: 0.5 }}
         >
           <h2 className="shipping-form-title">Shipping Details</h2>
-          <div className="space-y-6 tracking-wider font-semibold">
+          <div className="shipping-form">
             {/* Form Fields */}
             <div className="form-group">
               <label htmlFor="name" className="label">
@@ -154,7 +158,7 @@ const CheckoutPage = () => {
                 className="input"
               />
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid-container">
               <div>
                 <label htmlFor="city" className="label">
                   City
@@ -184,7 +188,7 @@ const CheckoutPage = () => {
                 />
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid-container">
               <div>
                 <label htmlFor="state" className="label">
                   State
@@ -228,7 +232,7 @@ const CheckoutPage = () => {
                 required
               />
             </div>
-            <div className="flex justify-center">
+            <div className="form-button">
               <button type="submit" className="button-submit">
                 Save and Continue
               </button>
@@ -244,12 +248,12 @@ const CheckoutPage = () => {
           transition={{ duration: 0.5 }}
         >
           {cartItems.length === 0 ? (
-            <p className="text-center text-gray-700">Your cart is empty.</p>
+            <p className="cart-text">Your cart is empty.</p>
           ) : (
             <>
               <h2 className="cart-items-title">Cart Items</h2>
-              <div className="flex-1">
-                <div className="space-y-6">
+              <div className="cart-items-box">
+                <div className="cart-items-space">
                   {cartItems.map((item) => (
                     <div key={item._id} className="cart-item">
                       <img src={item.img} alt={item.name} />
@@ -283,7 +287,7 @@ const CheckoutPage = () => {
                         </p>
                       </div>
                       <button
-                        onClick={() => handleRemoveItem(item._id)}
+                        onClick={() => handleRemoveItem(item)}
                         className="remove-item-button"
                         aria-label="Remove item"
                       >
@@ -299,13 +303,13 @@ const CheckoutPage = () => {
                   <p className="cart-summary-text">Subtotal</p>
                   <p className="cart-summary-value">₹{subtotal.toFixed(2)}</p>
                 </div>
-                <div className="cart-summary-row mt-2">
+                <div className="cart-summary-row">
                   <p className="cart-summary-text">Delivery Fee</p>
                   <p className="cart-summary-value">
                     ₹{deliveryFee.toFixed(2)}
                   </p>
                 </div>
-                <div className="cart-summary-row mt-2">
+                <div className="cart-summary-row">
                   <p className="cart-summary-text">Total</p>
                   <p className="cart-summary-value">₹{total.toFixed(2)}</p>
                 </div>

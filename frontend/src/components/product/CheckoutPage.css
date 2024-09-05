@@ -2,11 +2,23 @@
 
 /* Container */
 .checkout-container {
-  margin: 2.5rem auto;
-  padding: 1.25rem;
-  max-width: 1200px;
+  margin: 0; /* Remove any default margin */
+  padding: 4rem; /* Remove any default padding */
+  width: 100%; /* Make the container full width */
   background: linear-gradient(to right, #b2f5ea, #a0f3f0);
-  border-radius: 0.75rem;
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem; /* Equivalent to Tailwind's gap-6 */
+}
+
+@media (min-width: 768px) {
+  .flex-container {
+    flex-direction: row;
+     /* Changes to row on medium screens and above */
+  }
 }
 
 /* Progress Bar */
@@ -31,8 +43,15 @@
   background: #ffffff;
   padding: 2rem;
   border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e2e8f0;
+}
+
+@media (max-width: 768px) {
+  .shipping-form {
+     padding: 20px 10px;
+  }
+  .checkout-container{
+    padding: 1rem;
+  }
 }
 
 .shipping-form-title {
@@ -45,9 +64,32 @@
   text-align: center;
 }
 
+.shipping-form {
+  font-weight: 600; /* Equivalent to font-semibold */
+  letter-spacing: 0.05em; /* Equivalent to tracking-wider */
+}
+
+.shipping-form > * + * {
+  margin-top: 1.5rem; /* Adds space between child elements, equivalent to space-y-6 */
+}
+
+
 .form-group {
   margin-bottom: 1.5rem;
 }
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr; /* 1 column by default */
+  gap: 1.5rem; /* Equivalent to gap-6 */
+}
+
+@media (min-width: 768px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for medium screens and up */
+  }
+}
+
 
 .label {
   display: block;
@@ -64,8 +106,13 @@
   color: #1a202c;
 }
 
+.form-button {
+  display: flex;
+  justify-content: center;
+}
+
 .button-submit {
-  background-color: #2b6cb0;
+  background-color: #3697ff;
   color: #ffffff;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -91,6 +138,11 @@
   flex-direction: column;
 }
 
+.cart-text {
+    text-align: center;
+    color: #4a5568; /* This is the color code for Tailwind's gray-700 */
+}
+
 .cart-items-title {
   font-size: 1.25rem;
   text-transform: uppercase;
@@ -110,6 +162,16 @@
   position: relative;
 }
 
+.cart-items-box {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0%;
+}
+
+.cart-items-space > * + *{
+  margin-top: 1.5rem;
+}
+  
 .cart-item img {
   width: 6rem;
   height: 6rem;
@@ -181,6 +243,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 5px;
 }
 
 .cart-summary-text {
