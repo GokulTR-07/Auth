@@ -36,7 +36,7 @@ const DefaultDashboard = ({ isDarkMode }) => {
       .get("/admin/default-analytics")
       .then((response) => {
         const { salesData, revenueData, productSales } = response.data || {};
-
+        console.log(response.data);
         // Prepare data for Line Chart (Sales Data)
         setLineChartData({
           labels: Object.keys(salesData || {}),

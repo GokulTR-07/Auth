@@ -9,7 +9,7 @@ const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
 
 export const analyzeData = async (req, res) => {
   try {
-    const { recommendation, culinary, medicinal, cosmetic, pregnantWomen } = req.body;
+    const { gender , recommendation, culinary, medicinal, cosmetic, pregnantWomen, user } = req.body;
     const { useCases } = recommendation;
 
     if (!useCases || !Array.isArray(useCases)) {
@@ -17,8 +17,6 @@ export const analyzeData = async (req, res) => {
     }
 
     // Extract user data from the request
-    const user = req.body;
-    console.log(user);
     if (!user || !user.id || !user.name || !user.email) {
       return res.status(400).json({ error: "User information is missing" });
     }
@@ -31,6 +29,7 @@ export const analyzeData = async (req, res) => {
         email: user.email,
         role: user.role || "user", // Default to "user" if role is not provided
       },
+      gender,
       recommendation: {
         useCases: Array.isArray(req.body.recommendation?.useCases)
           ? req.body.recommendation.useCases

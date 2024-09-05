@@ -7,29 +7,27 @@ import CartModel from "./CartModel";
 import axios from "axios";
 import saffron1 from "/saffron-1.jpg"; // Sample images
 import saffron2 from "/saffron-2.jpg";
+import { userContext } from "../../context/UserContext";
 
 function SingleProduct() {
   const { addToCart, cartItems } = useContext(CartContext);
-  const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedWeight, setSelectedWeight] = useState(2); // Default weight
   const [currentProductIndex, setCurrentProductIndex] = useState(0); // Track current product
   const [clickCount, setClickCount] = useState(0); // Track the number of clicks
+  const { user } = useContext(userContext); // Get user info from context
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProductData = async () => {
       try {
-        // Fetching all products. Adjust endpoint or parameters as needed
         const response = await axios.get("/products"); // Example endpoint
         const products = response.data;
 
-        // Assuming the API returns an array of products
         if (products.length > 0) {
           const productData = products[currentProductIndex];
           console.log("Fetching product data:", productData);
-          // Dynamically assign images based on some condition
           productData.img = productData._id === '66d2e6ed20b726ac685d2649' ? saffron1 : saffron2; 
           setProduct(productData);
         }
@@ -39,9 +37,21 @@ function SingleProduct() {
     };
 
     fetchProductData();
-  }, [currentProductIndex]); // Re-fetch when currentProductIndex changes
+  }, [currentProductIndex]);
 
-  // Handle background color change based on currentProductIndex
+  const getDefaultQuantity = (weight) => {
+    if (user?.role === "wholesaler") {
+      return weight === 2 ? 5 : 2;
+    }
+    return 1;
+  };
+
+  const [quantity, setQuantity] = useState(getDefaultQuantity(selectedWeight));
+
+  useEffect(() => {
+    setQuantity(getDefaultQuantity(selectedWeight));
+  }, [selectedWeight, user]);
+
   const getBackgroundColor = () => {
     return currentProductIndex === 0
       ? "bg-gradient-to-b from-[#746d9f] to-[#110845c5]" : 
@@ -68,7 +78,7 @@ function SingleProduct() {
 
   const handleBuyNow = () => {
     handleAddToCart();
-    navigate("/checkout"); // Redirect to checkout
+    navigate("/checkout");
   };
 
   const incrementQuantity = () => {
@@ -76,19 +86,17 @@ function SingleProduct() {
   };
 
   const decrementQuantity = () => {
-    if (quantity > 1) {
-      setQuantity((prev) => prev - 1);
-    }
+    const minimumQuantity = getDefaultQuantity(selectedWeight);
+    setQuantity((prev) => (prev > minimumQuantity ? prev - 1 : prev));
   };
 
   const handleSwitchProduct = () => {
     setClickCount((prevCount) => {
       const newCount = prevCount + 1;
       setCurrentProductIndex((prevIndex) => {
-        const direction = newCount % 2 === 1 ? 1 : -1; // Toggle between next (1) and previous (-1)
+        const direction = newCount % 2 === 1 ? 1 : -1;
         const newIndex = prevIndex + direction;
-        // Ensure the newIndex is within bounds
-        return newIndex < 0 ? 0 : newIndex >= 2 ? 1 : newIndex; // Assuming only 2 products
+        return newIndex < 0 ? 0 : newIndex >= 2 ? 1 : newIndex;
       });
       return newCount;
     });
@@ -162,7 +170,7 @@ function SingleProduct() {
 
             <div className="text-sm tracking-wider mt-4 text-white">
               {stockInfo > 0
-                ? `In Stock (${stockInfo} available)`
+                ? `In Stock (${stockInfo} Boxes Available)`
                 : "Out of Stock"}
             </div>
           </div>
@@ -222,4 +230,3 @@ function SingleProduct() {
 }
 
 export default SingleProduct;
-

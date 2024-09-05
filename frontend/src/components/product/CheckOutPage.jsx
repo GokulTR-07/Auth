@@ -85,6 +85,7 @@ const CheckoutPage = () => {
     updateQuantity(id, weight, -1);
   };
 
+
   // Calculate Subtotal
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
@@ -323,7 +324,7 @@ const CheckoutPage = () => {
                         </p>
                       </div>
                       <button
-                        onClick={() => removeItem(item.id, item.weight)}
+                        onClick={() => removeItem(item._id, item.weight)}
                         className="absolute lg:top-10 lg:right-2 right-0 text-red-500 hover:text-red-700 transition duration-200"
                         aria-label="Remove item"
                       >

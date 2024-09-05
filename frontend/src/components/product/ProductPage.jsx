@@ -7,6 +7,7 @@ import product2 from '/saffron-2.jpg';
 import CartIcon from './CartIcon';
 import CartModel from './CartModel';
 import { CartContext } from '../../context/CartContext';
+import { userContext } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 
 function ProductPage() {
@@ -18,6 +19,7 @@ function ProductPage() {
     const [quantity, setQuantity] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { addToCart, cartItems } = useContext(CartContext);
+    const { user } = useContext(userContext);
     const [productData, setProductData] = useState([]);
     const navigate = useNavigate();
 
@@ -65,7 +67,8 @@ function ProductPage() {
     }
 
     function handleQuantityDec() {
-        if (quantity > 1) {
+        const defaultQuantity = getDefaultQuantity(grams);
+        if (quantity > defaultQuantity) {
             setQuantity(quantity - 1);
         }
     }
@@ -85,32 +88,38 @@ function ProductPage() {
 
     const handleVariantChange = (weight) => {
         setGrams(weight);
-        setQuantity(1); // Reset quantity when changing variant
+        setQuantity(getDefaultQuantity(weight)); // Reset quantity based on role and weight
     };
 
     const selectedVariant = selectedProduct?.variants.find(v => v.weight.toString() === grams);
 
-const handleAddToCart = () => {
-    if (selectedProduct && selectedVariant) {  // Ensure both selectedProduct and selectedVariant are defined
-        const productToAdd = {
-            _id: selectedVariant._id, // Correctly accessing the _id from the selected variant
-            name: selectedProduct.name,
-            img: selectedProduct.img || (selectedProduct._id === "66d2e6ed20b726ac685d2649" ? product1 : product2),
-            price: selectedVariant.price || 0,
-            weight: grams,
-            quantity,
-        };
-        addToCart(productToAdd);
-    } else {
-        console.error('Selected product or variant is missing');
-    }
-};
+    // Determine quantity for wholesalers
+    const getDefaultQuantity = (weight) => {
+        if (user?.role === 'wholesaler') {
+            return weight === '2' ? 5 : 2; // Adjust based on weight and user role
+        }
+        return 1;
+    };
 
-
+    const handleAddToCart = () => {
+        if (selectedProduct && selectedVariant) {
+            const productToAdd = {
+                _id: selectedVariant._id,
+                name: selectedProduct.name,
+                img: selectedProduct.img || (selectedProduct._id === "66d2e6ed20b726ac685d2649" ? product1 : product2),
+                price: selectedVariant.price || 0,
+                weight: grams,
+                quantity: quantity, // Use the updated quantity
+            };
+            addToCart(productToAdd);
+        } else {
+            console.error('Selected product or variant is missing');
+        }
+    };
 
     const handleBuyNow = () => {
         handleAddToCart();
-        navigate('/checkout'); // Navigate to checkout page
+        navigate('/checkout');
     };
 
     return (
@@ -145,7 +154,7 @@ const handleAddToCart = () => {
                             </div>
                             <div className='pp_div11_3'>
                                 <h1>In Stock</h1>
-                                <h2>({selectedVariant?.stock || 0} Available)</h2>
+                                <h2>({selectedVariant?.stock || 0} Boxes Available)</h2>
                             </div>
                             <div>
                                 <h2 style={{ color: "white", paddingTop: "10px" }}>

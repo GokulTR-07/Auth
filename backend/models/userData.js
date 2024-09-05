@@ -5,6 +5,11 @@ const userDataSchema = new Schema({
   recommendation: {
     useCases: [String],
   },
+  gender: { 
+    type: String, 
+    enum: ['male', 'female', 'others'], 
+    required: true 
+  }, 
   culinary: {
     cuisine: String,
     dishes: [String],

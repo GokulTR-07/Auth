@@ -9,21 +9,33 @@ import { CartContext } from '../../context/CartContext';
 import saffron1 from "/saffron-1.jpg"; 
 import saffron2 from "/saffron-2.jpg";
 import { useNavigate } from 'react-router-dom';
+import { userContext } from '../../context/UserContext';
 
 function CardProduct() {
+
+    const getDefaultQuantity = (productType, weight) => {
+        if (user?.role === "wholesaler") {
+            return weight === 2 ? 5 : 2;
+        }
+        return 1;
+    };
+
+
     const [select, setSelect] = useState('kashmir');
     const [productData, setProductData] = useState(null);
     const [selectedVariant, setSelectedVariant] = useState({
         kashmir: { weight: 2, price: 525, _id: '' },
         spain: { weight: 2, price: 575, _id: '' }
     });
-    const [kashmirItemCount, setKashmirItemCount] = useState(1);
-    const [spainItemCount, setSpainItemCount] = useState(1);
+    const { user } = useContext(userContext);
+    const { addToCart, cartItems } = useContext(CartContext);
+    const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [isKashmirInCart, setIsKashmirInCart] = useState(false);
     const [isSpainInCart, setIsSpainInCart] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const { addToCart, cartItems } = useContext(CartContext);
+    const [selectedWeight, setSelectedWeight] = useState(2);
+    const [kashmirItemCount, setKashmirItemCount] = useState(getDefaultQuantity('kashmir', selectedWeight));
+    const [spainItemCount, setSpainItemCount] = useState(getDefaultQuantity('spain', selectedWeight));
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -46,21 +58,26 @@ function CardProduct() {
         fetchProducts();
     }, []);
     
+    useEffect(() => {
+        setKashmirItemCount(getDefaultQuantity('kashmir', selectedWeight));
+        setSpainItemCount(getDefaultQuantity('spain', selectedWeight));
+    }, [selectedWeight, user]);
 
     const handleClick = (val) => {
         setSelect(val);
-        // Change the selected variant when switching products
         setSelectedVariant({
             ...selectedVariant,
             [val]: productData[val === 'kashmir' ? 0 : 1].variants[0]
         });
     };
 
+    
+
     const handleQuantityChange = (type, action) => {
         if (type === 'spain') {
-            setSpainItemCount(prevCount => action === 'inc' ? prevCount + 1 : Math.max(prevCount - 1, 1));
+            setSpainItemCount(prevCount => action === 'inc' ? prevCount + 1 : Math.max(prevCount - getDefaultQuantity('spain', selectedWeight), getDefaultQuantity('spain', selectedWeight)));
         } else if (type === 'kashmir') {
-            setKashmirItemCount(prevCount => action === 'inc' ? prevCount + 1 : Math.max(prevCount - 1, 1));
+            setKashmirItemCount(prevCount => action === 'inc' ? prevCount + 1 : Math.max(prevCount - getDefaultQuantity('kashmir', selectedWeight), getDefaultQuantity('kashmir', selectedWeight)));
         }
     };
 
@@ -69,6 +86,7 @@ function CardProduct() {
             ...selectedVariant,
             [productType]: variant
         });
+        setSelectedWeight(variant.weight);
     };
 
     const handleAddToCart = (productType) => {
@@ -79,34 +97,30 @@ function CardProduct() {
 
         if (variant) {
             const product = {
-                _id: variant._id, // Add variant ID here
+                _id: variant._id,
                 name: selectedProduct.name,
                 quantity: productType === 'kashmir' ? kashmirItemCount : spainItemCount,
                 weight: selectedVariant[productType].weight,
                 price: selectedVariant[productType].price,
-                img: selectedProduct.img, // Add image URL here
+                img: selectedProduct.img,
             };
             addToCart(product);
             console.log(product);
 
             if (productType === 'kashmir') {
                 setIsKashmirInCart(true);
-                setKashmirItemCount(1); // Reset quantity to 1 after adding to cart
             } else {
                 setIsSpainInCart(true);
-                setSpainItemCount(1); // Reset quantity to 1 after adding to cart
             }
         } else {
             console.error('Variant not found for the selected weight.');
         }
     };
 
-    const handleBuyNow = () => {
-        handleAddToCart();
+    const handleBuyNow = (productType) => {
+        handleAddToCart(productType);
         navigate("/checkout"); // Redirect to checkout
-      };
-
-    const navigate = useNavigate();
+    };
 
     const handleOpenModal = () => setIsModalOpen(true);
     const handleCloseModal = () => setIsModalOpen(false);
@@ -117,7 +131,6 @@ function CardProduct() {
 
     const currentProduct = select === 'kashmir' ? productData[0] : productData[1];
     const currentVariant = selectedVariant[select];
-    const currentImage = select === 'kashmir' ? saffron1 : saffron2; // Set the appropriate image
 
     return (
         <div className='cp_main'>
@@ -147,14 +160,14 @@ function CardProduct() {
                             ))}
                         </div>
                         <div>
-                            <p>In stock ({currentVariant.stock} Available)</p>
+                            <p>In stock ({currentVariant.stock} Boxes Available)</p>
                         </div>
                         <div>
                           <p>Price: Rs {currentVariant.price}</p>
                         </div>
                     </div>
                     <div className={`cp_div22_1 ${select}`}>
-                        <img src={saffron1} alt={productData[0].name} width={200} height={100} style={{ backgroundSize: "cover", borderRadius: "20px", objectFit: "cover", width: "100%", height: "100%" }} /> {/* Kashmir Saffron Image */}
+                        <img src={saffron1} alt={productData[0].name} width={200} height={100} style={{ backgroundSize: "cover", borderRadius: "20px", objectFit: "cover", width: "100%", height: "100%" }} />
                         <div className='cp_div22_11'>
                             <div className='cp_div22_11_1'><h1>{productData[0].name}</h1></div>
                             <div className='cp_div22_11_2'>
@@ -173,11 +186,11 @@ function CardProduct() {
                         </div>
                     </div>
                     <div className={`cp_div22_2 ${select}`}>
-                        <img src={saffron2} alt={productData[1].name} width={200} height={100} style={{ backgroundSize: "cover", borderRadius: "20px", objectFit: "cover", width: "100%", height: "100%" }} /> {/* Spain Saffron Image */}
+                        <img src={saffron2} alt={productData[1].name} width={200} height={100} style={{ backgroundSize: "cover", borderRadius: "20px", objectFit: "cover", width: "100%", height: "100%" }} />
                         <div className='cp_div22_11'>
                             <div className='cp_div22_11_1'><h1>{productData[1].name}</h1></div>
                             <div className='cp_div22_11_2'>
-                                {isSpainInCart > 0 ? (
+                                {isSpainInCart ? (
                                     <div className='cp_cart_hover'>
                                         <button onClick={() => handleQuantityChange('spain', 'dec')}>-</button> 
                                         <p>{spainItemCount}</p> 

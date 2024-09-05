@@ -12,6 +12,12 @@ import Client from "../../assets/gif/Animation - 1723117354452.gif"
 import { userContext } from "../../context/UserContext";
 
 const useCaseQuestions = {
+  gender: {
+    question: "What is your gender? (e.g., Male, Female). If you prefer to specify, type your gender below:",
+    type: "text",
+    name: "gender",
+    options: ["Male", "Female" ],
+  },
   recommendation: {
     question:
       "Type your use case: 1. Culinary Uses, 2. Cosmetic Uses, 3. Medicinal Uses, 4. Pregnant Woman Uses. You can select multiple by typing their numbers separated by commas (e.g., 1,2).",
@@ -351,9 +357,15 @@ const Chatbot = () => {
         ]);
         speak("Thank you for your input! We will process your data now.");
 
+         // Include user data in the request payload
+      const requestData = {
+        ...data,
+        user: user // Add user data here
+      };
+
         // Send data to backend
         try {
-          const response = await axios.post("/analyzeData", data, {user});
+          const response = await axios.post("/analyzeData", requestData);
           
           const suggestionText = response.data.suggestion;
           setSuggestion(suggestionText);
