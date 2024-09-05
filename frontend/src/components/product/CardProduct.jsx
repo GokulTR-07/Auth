@@ -153,7 +153,7 @@ function CardProduct() {
                                 <button
                                     key={variant._id}
                                     onClick={() => handleVariantChange(select, variant)}
-                                    className={currentVariant._id === variant._id ? 'selected' : ''}
+                                    className={`variant-button ${currentVariant._id === variant._id ? 'selected' : ''}`}
                                 >
                                     {variant.weight} g
                                 </button>
