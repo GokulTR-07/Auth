@@ -1,0 +1,59 @@
+.progress-bar-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem; /* Adjust as needed for spacing */
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progress-number {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.progress-number.current {
+  background-color: #2563eb; /* Blue-600 */
+  color: #ffffff; /* White */
+}
+
+.progress-number.inactive {
+  background-color: #d1d5db; /* Gray-300 */
+  color: #374151; /* Gray-700 */
+}
+
+.progress-label {
+  margin-top: 0.5rem; /* Adjust as needed for spacing */
+  font-weight: 500;
+}
+
+.progress-label.current {
+  color: #2563eb; /* Blue-600 */
+}
+
+.progress-label.inactive {
+  color: #1f2937; /* Gray-900 */
+}
+
+.progress-line {
+  height: 0.25rem;
+  flex: 1;
+  margin: 0 0.5rem;
+  background-color: #d1d5db; /* Gray-300 */
+}
+
+.progress-line.completed {
+  background-color: #2563eb; /* Blue-600 */
+}

@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { userContext } from "../../context/UserContext";
-import ProgressBar from "../../components/product/ProgressBar"; // Import the ProgressBar component
+import ProgressBar from "../../components/product/ProgressBar";
+import "./PaymentPage.css"; // Import the CSS file
 
 const PaymentPage = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -97,27 +98,23 @@ const PaymentPage = () => {
   };
 
   return (
-    <div className="container mx-auto my-10 p-5 max-w-7xl bg-gradient-to-r from-teal-100 to-teal-200 rounded-lg">
-      <ProgressBar currentStep={2} /> {/* Add the ProgressBar component here */}
-      <h1 className="text-3xl font-bold mb-6 text-gray-900 uppercase tracking-wider text-center">Payment</h1>
+    <div className="container">
+      <ProgressBar className="progress-bar" currentStep={2} />
+      <h1 className="page-title">Payment</h1>
       <div className="flex flex-col md:flex-row gap-6">
         <motion.div
-          className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 flex-1"
+          className="card"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-2xl text-center font-semibold mb-6 text-gray-900 tracking-wider">
-            Select Payment Method
-          </h2>
+          <h2 className="card-title">Select Payment Method</h2>
           <div className="mb-6">
-            <label className="block font-bold tracking-wider text-gray-700 text-sm mb-2">
-              Payment Method
-            </label>
+            <label className="select-label">Payment Method</label>
             <select
               value={paymentMethod}
               onChange={handlePaymentMethodChange}
-              className="w-full border border-gray-300 rounded-md p-3 text-gray-900 tracking-wider"
+              className="select-input"
             >
               <option value="">Select an option</option>
               <option value="creditCard">Credit Card</option>
@@ -129,7 +126,7 @@ const PaymentPage = () => {
           <div className="flex justify-center mt-8">
             <button
               onClick={handlePayment}
-              className="bg-blue-600 font-bold tracking-widest text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-200"
+              className="button"
             >
               Pay Now
             </button>
@@ -137,14 +134,12 @@ const PaymentPage = () => {
         </motion.div>
 
         <motion.div
-          className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 flex-1"
+          className="order-summary"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="text-2xl tracking-wider text-center font-semibold mb-6 text-gray-900">
-            Order Summary
-          </h2>
+          <h2 className="summary-title">Order Summary</h2>
           <div className="space-y-4">
             {cartItems.length === 0 ? (
               <p className="text-center text-gray-700 tracking-wider">No items in the cart.</p>
@@ -152,25 +147,23 @@ const PaymentPage = () => {
               cartItems.map((item) => (
                 <div
                   key={item.name}
-                  className="flex items-center border-b border-gray-300 py-4"
+                  className="item"
                 >
                   <img
                     src={item.img}
                     alt={item.name}
-                    className="w-16 h-16 object-cover rounded-md"
+                    className="item-img"
                   />
-                  <div className="ml-4 flex-1">
-                    <h3 className="text-lg tracking-wider font-semibold text-gray-900">
-                      {item.name}
-                    </h3>
-                    <p className="text-gray-600 font-medium tracking-wider">Quantity: {item.quantity}</p>
-                    <p className="text-gray-800 font-medium tracking-wider">Price: ₹{item.price * item.quantity}</p>
+                  <div className="item-details">
+                    <h3 className="item-name">{item.name}</h3>
+                    <p className="item-quantity">Quantity: {item.quantity}</p>
+                    <p className="item-price">Price: ₹{item.price * item.quantity}</p>
                   </div>
                 </div>
               ))
             )}
             {cartItems.length > 0 && (
-              <div className="flex justify-between font-bold text-gray-900 mt-4 tracking-wider">
+              <div className="total">
                 <span>Total</span>
                 <span>₹{calculateTotal().toFixed(2)}</span>
               </div>

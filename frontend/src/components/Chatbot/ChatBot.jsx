@@ -13,14 +13,14 @@ import { userContext } from "../../context/UserContext";
 
 const useCaseQuestions = {
   gender: {
-    question: "What is your gender? (e.g., Male, Female). If you prefer to specify, type your gender below:",
+    question: "To get started, could you please tell me your gender? This will help us tailor our recommendations to you. (e.g., Male, Female). If you prefer to specify, type your gender below",
     type: "text",
     name: "gender",
     options: ["Male", "Female" ],
   },
   recommendation: {
     question:
-      "Type your use case: 1. Culinary Uses, 2. Cosmetic Uses, 3. Medicinal Uses, 4. Pregnant Woman Uses. You can select multiple by typing their numbers separated by commas (e.g., 1,2).",
+      "Type your use case: 1. Culinary Uses, 2. Cosmetic Uses, 3. Medicinal Uses, 4. Pregnant Woman Uses. You can select by typing their numbers (e.g., 1)",
     type: "text",
     name: "useCases",
   },
@@ -173,8 +173,8 @@ const useCaseQuestions = {
 };
 
 const initialMessages = [
-  { text: "Welcome! How can I assist you today?", type: "bot" },
-  { text: "Please say something to continue.", type: "bot" },
+  { text: "Hello and welcome! I'm here to help you find the perfect saffron product for your needs.", type: "bot" },
+  { text: `${useCaseQuestions.gender.question}`, type: "bot" }
 ];
 
 const Chatbot = () => {
@@ -267,25 +267,32 @@ const Chatbot = () => {
 
   const handleSubmit = async (inputValue = input) => {
     if (!inputValue.trim()) return;
-
+  
     const newMessages = [...messages, { text: inputValue, type: "user" }];
     setMessages(newMessages);
     setInput("");
-
+  
     // Speak the user's response
     speak(inputValue);
-
+  
     if (step === -1) {
+      // Handle gender input
+      setData({
+        ...data,
+        gender: inputValue.trim().toLowerCase(), // Save gender data
+      });
+  
       setMessages([
         ...newMessages,
         { text: useCaseQuestions.recommendation.question, type: "bot" },
       ]);
-      speak(useCaseQuestions.recommendation.question); 
+      speak(useCaseQuestions.recommendation.question);
       setStep(0);
       return;
     }
-
+  
     if (step === 0) {
+      // Handle use cases selection
       const selectedUseCases = inputValue
         .split(",")
         .map((caseNum) => caseNum.trim().toLowerCase());
@@ -299,7 +306,7 @@ const Chatbot = () => {
       const selectedValidUseCases = selectedUseCases
         .filter((caseNum) => validUseCases.includes(caseNum))
         .map((caseNum) => useCaseMapping[caseNum]);
-
+  
       if (selectedValidUseCases.length > 0) {
         setUseCases(selectedValidUseCases);
         setData({
@@ -324,28 +331,31 @@ const Chatbot = () => {
             type: "bot",
           },
         ]);
-        speak("Invalid use cases selected. Please try again."); 
+        speak("Invalid use cases selected. Please try again.");
       }
       return;
     }
-
+  
     if (step >= 1) {
+      // Handle responses for subsequent questions
       const currentQuestion = currentQuestions[step - 1];
       const newData = { ...data };
+  
       if (currentQuestion.type === "text") {
-        newData[currentQuestion.name] = inputValue;
+        newData[currentQuestion.name] = inputValue.trim();
       } else if (currentQuestion.type === "select") {
-        newData[currentQuestion.name] = inputValue;
+        newData[currentQuestion.name] = inputValue.trim();
       }
+  
       setData(newData);
-
+  
       if (step < currentQuestions.length) {
         const nextQuestion = currentQuestions[step];
         setMessages([
           ...newMessages,
           { text: nextQuestion.question, type: "bot" },
         ]);
-        speak(nextQuestion.question); 
+        speak(nextQuestion.question);
         setStep(step + 1);
       } else {
         setMessages([
@@ -356,20 +366,20 @@ const Chatbot = () => {
           },
         ]);
         speak("Thank you for your input! We will process your data now.");
-
-         // Include user data in the request payload
-      const requestData = {
-        ...data,
-        user: user // Add user data here
-      };
-
+  
+        // Include user data in the request payload
+        const requestData = {
+          ...data,
+          user: user, // Add user data here
+        };
+  
         // Send data to backend
         try {
           const response = await axios.post("/analyzeData", requestData);
           
           const suggestionText = response.data.suggestion;
           setSuggestion(suggestionText);
-
+  
           setMessages([
             ...messages,
             {
@@ -378,11 +388,11 @@ const Chatbot = () => {
             },
             { text: suggestionText, type: "suggestion" },
           ]);
-
+  
           speak(
             "Thank you for your responses. We have submitted your data.",
             () => {
-              speak(suggestionText); 
+              speak(suggestionText);
             }
           );
         } catch (error) {
@@ -394,11 +404,12 @@ const Chatbot = () => {
               type: "bot",
             },
           ]);
-          speak("There was an error submitting your data. Please try again."); 
+          speak("There was an error submitting your data. Please try again.");
         }
       }
     }
   };
+  
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });

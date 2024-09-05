@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaChevronRight } from 'react-icons/fa';
 import { motion } from "framer-motion";
 import { CartContext } from "../../context/CartContext";
@@ -191,6 +191,7 @@ const ProductCard = () => {
           </motion.div>
         ))}
       </div>
+      <Link to={"/chatbot"}>Bot</Link>
     </div>
   );
 };

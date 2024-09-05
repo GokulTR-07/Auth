@@ -5,7 +5,7 @@ const BotProductCard = ({ product }) => {
   const navigate = useNavigate(); // Initialize useNavigate
 
   const handleClick = () => {
-    navigate(`/product/${product.id}`); // Navigate to the product section
+    navigate(`/singleproduct`); // Navigate to the product section
   };
 
   return (

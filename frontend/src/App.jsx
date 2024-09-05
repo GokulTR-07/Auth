@@ -50,7 +50,7 @@ function App() {
     <UserContextProvider>
       <CartProvider>
         <Toaster position="bottom-center" toastOptions={{ duration: 2000 }} />
-        <Navbar />
+        {/* <Navbar /> */}
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/singleproduct" element={<SingleProduct />} />
